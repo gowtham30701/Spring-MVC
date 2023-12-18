@@ -1,5 +1,7 @@
 package com.gowtham.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gowtham.dto.UserDto;
@@ -10,13 +12,15 @@ import com.gowtham.repositories.UserRepository;
 public class UserServiceImpl implements UserService{
 
 	
-	private UserRepository userRepository;
+	private PasswordEncoder passwordEncoder ;
 	
+	private final UserRepository userRepository;
 	
-	public UserServiceImpl(UserRepository userRepository) {
-		super();
-		this.userRepository = userRepository;
-	}
+	@Autowired
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
 	@Override
 	public User findByUsername(String username) {
@@ -27,7 +31,7 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public User save(UserDto userDto) {
 		
-		User user = new User(userDto.getUsername(), userDto.getPassword());
+		User user = new User(userDto.getUsername(),passwordEncoder.encode(userDto.getPassword()));
 		return userRepository.save(user);
 	}
 
